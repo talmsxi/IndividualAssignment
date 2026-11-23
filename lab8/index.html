@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота 8</title>
+    <style>
+        body {
+            background-color: #10101c;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+        .window {
+            background-color: #1d1d2e;
+            border: 1px solid #343450;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            color: #ffffff;
+        }
+        h1 {
+            margin: 0 0 30px;
+            font-size: 26px;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            width: 190px;
+            padding: 20px 15px;
+            background-color: #272740;
+            border: 2px solid #343450;
+            border-radius: 18px;
+        }
+        .card.winner {
+            border-color: #ffd54a;
+        }
+        .crown {
+            height: 34px;
+            font-size: 28px;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background-color: #ffffff;
+            border-radius: 50%;
+        }
+        .name {
+            margin: 12px 0;
+            font-size: 18px;
+        }
+        .score {
+            height: 38px;
+            line-height: 38px;
+            font-size: 20px;
+            background-color: #3b82f6;
+            border-radius: 10px;
+            color: #ffffff;
+        }
+        .circle {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            margin: 18px auto 0;
+            font-size: 40px;
+            background-color: #ffd54a;
+            border-radius: 50%;
+            color: #2a2a1a;
+        }
+        .btn {
+            width: 150px;
+            height: 64px;
+            line-height: 64px;
+            margin: 0 28px;
+            font-size: 19px;
+            background: linear-gradient(#34d96f, #15a34a);
+            border-radius: 14px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: linear-gradient(#4ae884, #18b854);
+        }
+        .result {
+            height: 26px;
+            margin: 28px 0 0;
+            font-size: 18px;
+            color: #ffd54a;
+        }
+        @media (max-width: 640px) {
+            .window {
+                padding: 25px;
+            }
+            .row {
+                display: block;
+            }
+            .card {
+                width: auto;
+            }
+            .btn {
+                margin: 20px auto;
+            }
+            .circle {
+                width: 80px;
+                height: 80px;
+                line-height: 80px;
+                font-size: 32px;
+            }
+        }
+
+        .back {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 10;
+            padding: 8px 16px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #e6e9f5;
+            background-color: rgba(23, 19, 51, 0.9);
+            border: 1px solid #4a3f85;
+            border-radius: 10px;
+        }
+
+        .back:hover {
+            color: #110e26;
+            background-color: #22e4ff;
+            border-color: #22e4ff;
+        }
+    </style>
+    <script>
+        const win = 3;
+
+        let userScore = 0;
+        let compScore = 0;
+        let gameOver = false;
+
+        window.onload = start;
+
+        function start() {
+            let name = prompt('Як вас звати?');
+
+            while (name != null && name.trim() == '') {
+                name = prompt('Ім\'я не може бути порожнім. Як вас звати?');
+            }
+
+            if (name == null) {
+                name = 'Гравець';
+            }
+
+            document.getElementById('userName').innerHTML = name;
+
+            newAvatars();
+        }
+
+        function newAvatars() {
+            let userSeed = Math.floor(Math.random() * 1000000);
+            let compSeed = Math.floor(Math.random() * 1000000);
+
+            document.getElementById('userImg').src =
+                'https://api.dicebear.com/7.x/avataaars/svg?seed=' + userSeed;
+
+            document.getElementById('compImg').src =
+                'https://api.dicebear.com/7.x/bottts/svg?seed=' + compSeed;
+        }
+
+        function showCrown() {
+            if (userScore > compScore) {
+                document.getElementById('userCrown').innerHTML = '&#128081;';
+                document.getElementById('compCrown').innerHTML = '';
+            }
+            else if (compScore > userScore) {
+                document.getElementById('userCrown').innerHTML = '';
+                document.getElementById('compCrown').innerHTML = '&#128081;';
+            }
+            else {
+                document.getElementById('userCrown').innerHTML = '';
+                document.getElementById('compCrown').innerHTML = '';
+            }
+        }
+
+        function generate() {
+            if (gameOver) {
+                newGame();
+            }
+            else {
+                let userNum = Math.floor(Math.random() * 10) + 1;
+                let compNum = Math.floor(Math.random() * 10) + 1;
+
+                document.getElementById('userNum').innerHTML = userNum;
+                document.getElementById('compNum').innerHTML = compNum;
+
+                newAvatars();
+
+                document.getElementById('userCard').classList.remove('winner');
+                document.getElementById('compCard').classList.remove('winner');
+
+                if (userNum > compNum) {
+                    userScore = userScore + 1;
+                    document.getElementById('userCard').classList.add('winner');
+                    document.getElementById('result').innerHTML = 'Раунд за вами';
+                }
+                else if (compNum > userNum) {
+                    compScore = compScore + 1;
+                    document.getElementById('compCard').classList.add('winner');
+                    document.getElementById('result').innerHTML = 'Раунд за комп\'ютером';
+                }
+                else {
+                    document.getElementById('result').innerHTML = 'Нічия';
+                }
+
+                document.getElementById('userScore').innerHTML = userScore;
+                document.getElementById('compScore').innerHTML = compScore;
+
+                showCrown();
+
+                if (userScore == win) {
+                    document.getElementById('result').innerHTML = 'Ви перемогли!';
+                    gameOver = true;
+                    document.getElementById('btn').innerHTML = 'Нова гра';
+                }
+                else if (compScore == win) {
+                    document.getElementById('result').innerHTML = 'Переміг комп\'ютер';
+                    gameOver = true;
+                    document.getElementById('btn').innerHTML = 'Нова гра';
+                }
+            }
+        }
+
+        function newGame() {
+            userScore = 0;
+            compScore = 0;
+            gameOver = false;
+
+            document.getElementById('userScore').innerHTML = '0';
+            document.getElementById('compScore').innerHTML = '0';
+            document.getElementById('userNum').innerHTML = '-';
+            document.getElementById('compNum').innerHTML = '-';
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('btn').innerHTML = 'Generate';
+            document.getElementById('userCard').classList.remove('winner');
+            document.getElementById('compCard').classList.remove('winner');
+
+            showCrown();
+            newAvatars();
+        }
+    </script>
+</head>
+<body>
+    <a class="back" href="../index.html">&larr; До меню</a>
+
+    <div class="window">
+        <h1>Більше число</h1>
+
+        <div class="row">
+
+            <div class="card" id="userCard">
+                <div class="crown" id="userCrown"></div>
+                <img class="avatar" id="userImg" src="https://api.dicebear.com/7.x/avataaars/svg?seed=1" alt="Гравець">
+                <p class="name" id="userName">User</p>
+                <div class="score" id="userScore">0</div>
+                <div class="circle" id="userNum">-</div>
+            </div>
+
+            <div class="btn" id="btn" onclick="generate();">Generate</div>
+
+            <div class="card" id="compCard">
+                <div class="crown" id="compCrown"></div>
+                <img class="avatar" id="compImg" src="https://api.dicebear.com/7.x/bottts/svg?seed=2" alt="Комп'ютер">
+                <p class="name">Computer</p>
+                <div class="score" id="compScore">0</div>
+                <div class="circle" id="compNum">-</div>
+            </div>
+
+        </div>
+
+        <p class="result" id="result"></p>
+    </div>
+
+</body>
+</html>
